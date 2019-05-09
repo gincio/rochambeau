@@ -3,8 +3,9 @@ var oponentUsername;
 var myScore;
 var oponentScore;
 var chosenFigure = '';
-var oponentFigure;
-var roundScore;
+var oponentFigure = '';
+var roundScore = '';
+var figures = ['paper','rock','scissors','lizard','spock'];
 var figureIcons = {
 	'paper' 	: 'far fa-hand-paper',
 	'rock' 		: 'far fa-hand-rock',
@@ -13,7 +14,6 @@ var figureIcons = {
 	'spock' 	: 'far fa-hand-spock',
 	''			: 'far fa-question-circle'
 }
-var figures = ['paper','rock','scissors','lizard','spock'];
 var timerInterval;
 
 $('#start-game').on('click', function() {
@@ -51,9 +51,6 @@ $('.figure').on('click', function() {
 			$(this).addClass('fade-out');
 		chooseFigure(chosenFigure);
 		});
-
-		// WYŚLIJ NA SERWER INFO CO WYBRAŁEM
-		//setTimeout(showScore,Math.floor(Math.random() * 5000));
 	}
 });
 
@@ -128,9 +125,6 @@ function showScore(roundScore) {
 	animateScoreDialog();
 	var myFigureIcon = $(document.createElement('i')).addClass(figureIcons[chosenFigure]);
 	$('#my-figure').html(myFigureIcon);
-	// TYLKO NA RAZIE Z BRAKU BACKENDU
-	// oponentFigure = figures[Math.floor(Math.random() * 5)];
-	// KONIEC
 	var oponentFigureIcon = $(document.createElement('i')).addClass(figureIcons[oponentFigure]);
 	$('#oponent-figure').html(oponentFigureIcon);
 	$('.round-score').children().each(function() {$(this).hide()});
