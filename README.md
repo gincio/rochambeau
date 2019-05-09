@@ -24,3 +24,15 @@ To run game webserver type
 cd rochambeau
 python webserver.py
 ```
+Server will start with your machine IP on port 5000, so if you want to run a game on this machine type in your browser address bar
+```
+http://127.0.0.1:5000
+```
+or
+```
+localhost:5000
+```
+If you want to run a game on other device type
+```
+http://<MACHINE_RUNNING_SERVER_IP>:5000
+```
