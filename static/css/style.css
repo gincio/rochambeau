@@ -1,0 +1,208 @@
+ @font-face { font-family: Bazaronite; src: url('../webfonts/Bazaronite.ttf'); } 
+
+body {
+	font-family: Helvetica, Verdana, Arial, "Times New Roman", sans-serif;
+	background: #fff url('../images/bg.jpg') center center no-repeat;
+}
+
+#my-score::after {
+	content: ':';
+}
+
+.game-container {
+	color: #fff;
+	max-width: 800px;
+	width: 90%;
+	margin: 0 auto;
+	text-align: center;
+	height: 400px;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 20px;
+	background-color: #000a;
+}
+
+.row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.welcome {
+    text-align: left;
+}
+
+.timer {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+
+.hurry-up {
+	animation: blink 1s infinite;
+}
+
+.score {
+	font-size: 60px;
+}
+
+#time-left {
+	font-size: 55px;
+	font-family: Bazaronite;
+}
+
+.figure-choose-container {
+	padding-top: 14px;
+	margin-top: 10px;
+	border-top: 1px solid #ccc;
+}
+
+.figures {
+	display: inline-flex;
+}
+
+.figure {
+	scale: 1;
+	width: 100px;
+	height: 100px;
+	margin: 4px;
+	transition: transform .5s, color .5s;
+}
+
+.figure i {
+	line-height: 100px;
+	font-size: 30px;
+}
+
+.figure:hover {
+	background-color: #457585;
+	border-radius: 12px;
+}
+
+.figure.chosen {
+	transform: scale(1.3);
+}
+
+.figure.fade-out {
+/*	visibility: hidden;
+*/	color: #fff4;
+}
+
+.figure.fade-out:hover,
+.figure.chosen:hover {
+/*	visibility: hidden;
+*/	background-color: #0000;
+}
+
+.button,
+input {
+	height: 40px;
+	padding: 0 18px;
+	background-color: #000a;
+	border-radius: 12px;
+	border: 2px solid #aaa;
+	color: #fff;
+	box-sizing: border-box;
+}
+
+.button:hover {
+	border: 2px solid #457585;
+}
+
+.dialog-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: #000a;
+}
+
+.dialog {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	width: 500px;
+	height: 300px;
+	background: #1b1b1b;
+	border-radius: 12px;
+	border: 1px solid #444;
+	color: #fff;
+	display: flex;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+.dialog-content-icon {
+	font-size: 90px;
+	display: block;
+	margin-bottom: 40px;
+}
+
+.dialog-content-icon.spinner {
+	animation: spin 3.5s linear infinite;
+}
+
+.score-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+}
+
+.round-chosen-figure {
+    font-size: 90px;
+    margin: 0 20px;
+}
+
+.round-chosen-figure.slide {
+	animation: slide ease-out 1s;
+}
+
+.dialog-content {
+    width: 100%;
+    margin: 0;
+}
+
+.versus {
+	font-family: 'Shadows Into Light', cursive;
+	font-size: 44px;
+}
+
+.versus.fade {
+	animation: fade ease-out 1s;
+}
+
+.hidden {
+	display: none;
+}
+
+@keyframes spin {
+	0% {transform: rotate(0deg)}
+	100% {transform: rotate(360deg)}
+}
+
+@keyframes blink {
+	0% {color: #fff}
+	49% {color: #fff}
+	50% {color: #e26464}
+	99% {color: #e26464}
+	100% {color: #fff}
+}
+
+@keyframes slide {
+	0% {margin: 0 70px}
+	100% {margin: 0 20px}
+}
+
+@keyframes fade {
+	0% {color: transparent;
+		padding-top: 30px;
+	}
+	100% {color: #fff;
+		padding-top: 0;
+	}
+}

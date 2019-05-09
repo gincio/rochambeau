@@ -1,0 +1,96 @@
+<html>
+<head>
+	<link rel="icon" href="static/images/favicon.ico" type="image/x-icon"/>
+	<link rel="shortcut icon" href="static/images/favicon.ico" type="image/x-icon"/>
+	<title>Rochambeau Multithread Game</title>
+	<link rel="stylesheet" type="text/css" href="static/css/all.min.css">
+	<link rel="stylesheet" type="text/css" href="static/css/style.css">
+	<link href="https://fonts.googleapis.com/css?family=Shadows+Into+Light" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah" rel="stylesheet">
+</head>
+
+<body>
+	<div class='game-container'>
+		<div class='row'>
+			<div class='welcome'>
+				<p>Witaj, <strong id='my-username'></strong></p>
+				<p>Grasz przeciwko <strong id='oponent-username'></strong></p>
+			</div>
+			<div class='score'>
+				<span id='my-score'>0</span><span id='oponent-score'>0</span>
+			</div>
+		</div>
+		<div class='timer'>
+			<span id='time-left'>00:15</span>
+		</div>
+		<div class='figure-choose-container'>
+			<p>Wybierz figurę</p>
+			<div class='figures'>
+				<div class='figure' id='paper'>
+					<i class='far fa-hand-paper'></i>
+				</div>
+				<div class='figure' id='rock'>
+					<i class='far fa-hand-rock'></i>
+				</div>
+				<div class='figure' id='scissors'>
+					<i class='far fa-hand-scissors'></i>
+				</div>
+				<div class='figure' id='lizard'>
+					<i class='far fa-hand-lizard'></i>
+				</div>
+				<div class='figure' id='spock'>
+					<i class='far fa-hand-spock'></i>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class='dialog-container' id='enter-name-dialog'>
+		<div class='dialog'>
+			<div class='dialog-content'>
+				<i class='dialog-content-icon fas fa-user'></i>
+				<p>Wprowadź nazwę użytkownika</p>
+				<input type='text' name='nickname' id='player-username'></input>
+				<button class='button' id='start-game'>Połącz</button>
+			</div>
+		</div>
+	</div>
+	<div class='dialog-container hidden' id='connection-error-dialog'>
+		<div class='dialog'>
+			<div class='dialog-content'>
+				<p>Błąd!</p>
+				<p>Nie udało połączyć się z serwerem. Spróbuj ponownie.</p>
+			</div>
+		</div>
+	</div>
+	<div class='dialog-container hidden' id='waiting-for-oponent-dialog'>
+		<div class='dialog'>
+			<div class='dialog-content'>
+				<i class='dialog-content-icon fas fa-spinner spinner'></i>
+				<p>Oczekiwanie na przeciwnika</p>
+				<p>Proszę czekać...</p>
+			</div>
+		</div>
+	</div>
+	<div class='dialog-container hidden' id='round-score-dialog'>
+		<div class='dialog'>
+			<div class='dialog-content' id='figure-chosen'>
+				<div class='score-container'>
+					<div class='round-chosen-figure' id='my-figure'>
+					</div>
+					<p class='versus'>VS.</p>
+					<div class='round-chosen-figure' id='oponent-figure'>
+					</div>
+				</div>
+				<span class='round-score'>
+					<span id='you-won'>Wygrałeś, gratulacje!</span>
+					<span id='you-lost'>Przegrałeś, powodzenia w następnej rundzie!</span>
+					<span id='draw'>Remis! Wynik gry nie zmienia się.</span>
+				</span>
+			</div>
+		</div>
+	</div>
+	<script src="static/js/jquery-3.4.0.min.js"></script>
+	<script src="static/js/jquery.xmlrpc.min.js"></script>
+	<script src="static/js/script.js"></script>
+</body>
+</html>
