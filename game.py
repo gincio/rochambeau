@@ -24,7 +24,6 @@ class Game:
 		:return: Move
 		"""
 		return self.moves[p]
-		# return json.dumps(self.moves[p])
 		
 	def player(self, player, move):
 	# gracz dokonuje wyboru
@@ -107,7 +106,6 @@ class Game:
 			winner = 1
 		
 		return winner
-		# return json.dumps(winner)
 		
 	def resetWent(self):
 	# przy każdej turze musimy wyzerować wybór, by ponownie sprawdzić
