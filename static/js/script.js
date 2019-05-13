@@ -1,3 +1,5 @@
+var gameId;
+var playerId;
 var myUsername;
 var oponentUsername;
 var myScore;
@@ -16,6 +18,17 @@ var figureIcons = {
 }
 var timerInterval;
 
+$('.figure').on('click', function() {
+	if (chosenFigure == '') {
+		chosenFigure = $(this).attr('id');
+		$(this).addClass('chosen');
+		$(this).siblings().each(function() {
+			$(this).addClass('fade-out');
+		chooseFigure(chosenFigure);
+		});
+	}
+});
+
 $('#start-game').on('click', function() {
 	myUsername = $('#player-username').val();
 	$('#my-username').text(myUsername);
@@ -28,6 +41,8 @@ $('#start-game').on('click', function() {
 		},
 		success: function (data) {
 			if (data['status'] == 'ok') {
+				gameId = data['GameId'];
+				playerId = data['UserId'];
 				getOponent();
 			}
 			else {
@@ -43,16 +58,66 @@ $('#start-game').on('click', function() {
 	});
 });
 
-$('.figure').on('click', function() {
-	if (chosenFigure == '') {
-		chosenFigure = $(this).attr('id');
-		$(this).addClass('chosen');
-		$(this).siblings().each(function() {
-			$(this).addClass('fade-out');
-		chooseFigure(chosenFigure);
-		});
-	}
-});
+function getOponent() {
+	$('#waiting-for-oponent-dialog').removeClass('hidden');
+	$.ajax({
+		url: 			window.location.href,
+		type:			'post',
+		data:	{
+			action: 	'getOponent',
+			GameId: 	gameId,
+			UserId: 	playerId
+		},
+		success: function (data) {
+			if (data['status'] == 'ok') {
+				opponentFound(data['username']);
+			}
+			else {
+				showConnectionErrorDialog();
+			}
+		},
+		error: function() {
+			showConnectionErrorDialog();
+		},
+		complete: function() {
+			$('#waiting-for-oponent-dialog').addClass('hidden');
+		}
+	});
+}
+
+function newRound() {
+	$('#waiting-for-oponent-dialog').removeClass('hidden');
+	$.ajax({
+		url: 			window.location.href,
+		type:			'post',
+		data:	{
+			action: 	'playerReady',
+			GameId: 	gameId,
+			UserId: 	playerId
+		},
+		success: function (data) {
+			if (data['status'] == 'ok') {
+				('#round-score-dialog').addClass('hidden');
+				chosenFigure = '';
+				oponentFigure = '';
+				roundScore = '';
+				$('.figure').each(function() {
+					$(this).attr('class','figure');
+				});
+				startTimer(15);
+			}
+			else {
+				showConnectionErrorDialog();
+			}
+		},
+		error: function() {
+			showConnectionErrorDialog();
+		},
+		complete: function() {
+			$('#waiting-for-oponent-dialog').addClass('hidden');
+		}
+	});
+}
 
 function chooseFigure(figure) {
 	$.ajax({
@@ -60,6 +125,8 @@ function chooseFigure(figure) {
 		type:			'post',
 		data:	{
 			action: 	'chooseFigure',
+			GameId: 	gameId,
+			UserId: 	playerId,
 			figure:		figure
 		},
 		success: function (data) {
@@ -87,30 +154,7 @@ function chooseFigure(figure) {
 	});
 }
 
-function getOponent() {
-	$('#waiting-for-oponent-dialog').removeClass('hidden');
-	$.ajax({
-		url: 			window.location.href,
-		type:			'post',
-		data:	{
-			action: 	'getOponent',
-		},
-		success: function (data) {
-			if (data['status'] == 'ok') {
-				opponentFound(data['username']);
-			}
-			else {
-				showConnectionErrorDialog();
-			}
-		},
-		error: function() {
-			showConnectionErrorDialog();
-		},
-		complete: function() {
-			$('#waiting-for-oponent-dialog').addClass('hidden');
-		}
-	});
-}
+
 function showConnectionErrorDialog() {
 	$('#connection-error-dialog').removeClass('hidden');
 	setTimeout(function () {
@@ -140,37 +184,6 @@ function showScore(roundScore) {
 		$('#draw').show();
 	}
 	setTimeout(newRound,4000);
-}
-function newRound() {
-	$('#waiting-for-oponent-dialog').removeClass('hidden');
-	$.ajax({
-		url: 			window.location.href,
-		type:			'post',
-		data:	{
-			action: 	'playerReady',
-		},
-		success: function (data) {
-			if (data['status'] == 'ok') {
-				('#round-score-dialog').addClass('hidden');
-				chosenFigure = '';
-				oponentFigure = '';
-				roundScore = '';
-				$('.figure').each(function() {
-					$(this).attr('class','figure');
-				});
-				startTimer(15);
-			}
-			else {
-				showConnectionErrorDialog();
-			}
-		},
-		error: function() {
-			showConnectionErrorDialog();
-		},
-		complete: function() {
-			$('#waiting-for-oponent-dialog').addClass('hidden');
-		}
-	});
 }
 
 function opponentFound(username) {
