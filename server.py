@@ -46,7 +46,7 @@ class Serwer:
 			games[gameId].game.p1Went = True
 		if games[gameId].game.p2Id == userId:
 			games[gameId].game.p2Went = True
-		while !games[gameId].game.bothWent():
+		while games[gameId].game.bothWent() == False:
 			print('Waiting for 2-nd player')
 		return games[gameId].game.bothWent()
 
