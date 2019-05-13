@@ -7,14 +7,14 @@ var oponentScore;
 var chosenFigure = '';
 var oponentFigure = '';
 var roundScore = '';
-var figures = ['paper','rock','scissors','lizard','spock'];
+var figures = ['P','R','S','L','K'];
 var figureIcons = {
-	'paper' 	: 'far fa-hand-paper',
-	'rock' 		: 'far fa-hand-rock',
-	'scissors' 	: 'far fa-hand-scissors',
-	'lizard' 	: 'far fa-hand-lizard',
-	'spock' 	: 'far fa-hand-spock',
-	''			: 'far fa-question-circle'
+	'P' 	: 'far fa-hand-paper',
+	'R' 	: 'far fa-hand-rock',
+	'S' 	: 'far fa-hand-scissors',
+	'L' 	: 'far fa-hand-lizard',
+	'K' 	: 'far fa-hand-spock',
+	''		: 'far fa-question-circle'
 }
 var timerInterval;
 
