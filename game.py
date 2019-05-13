@@ -10,6 +10,8 @@ class Game:
 		self.ties = 0
 		self.p1Nick = ''
 		self.p2Nick = ''
+		self.p1Id = 0
+		self.p2Id = 0
 		
 	def get_player1_nick(self):
 		return self.p1Nick

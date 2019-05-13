@@ -9,58 +9,70 @@ class Serwer:
 	def __init__(self):
 		self.games = {} # możemy (jako serwer) prowadzić wiele niezależnych gier, więc tworzymy ich słownik
 		self.idCount = 0 # zmienna do przechowywania ID następnej gry jaka powstanie
+		self.lastGameId = 0
+		self.lastPlayerId = 1
 
 	def connect(self, userName):
 		self.idCount += 1
-		gameId = (self.idCount - 1)/2
-		p = 0
+		gameId = self.lastGameId + 1
+		ans[0] = self.gameId
+		self.lastGameId += 1
 		if self.idCount % 2 == 1:
-			self.games[gameId] = Game(gameId)
-			self.games[gameId].p1Nick = userName
+			self.games[gameId] = start_new_thread(playGame, (self, gameId))
+			self.games[gameId].game.p1Nick = userName
+			self.games[gameId].game.p1Id = lastPlayerId
+			ans [1] = lastPlayerId
+			self.lastPlayerId += 1
 			print("Creating a new game...")
 		else:
-			self.games[gameId].ready = True
-			p = 1
-			self.games[gameId].p2Nick = UserName
-		start_new_thread(Game(gameId), ()) # jakie argumenty tutaj podać żeby tworzył się prawidłowo następny wątek? pierwszy argument musi dać się wywołać, bo to on jest właśnie funkcją którą obsłuży nowy wątek
-		return "ok"
+			self.games[gameId].game.ready = True
+			self.games[gameId].game.p2Nick = UserName
+			self.games[gameId].game.p2Id = lastPlayerId
+			ans [1] = lastPlayerId
+			self.lastPlayerId += 1
+		return ans
 
-	def playerName(self, userName, GameId):
-		if games[gameId].p1Nick != userName:
-			return games[gameId].p1Nick
+	def playGame(self, gameId):
+		self.game = Game(gameId)
+
+	def playerName(self, userId, GameId):
+		if games[gameId].game.p1Id != userId:
+			return games[gameId].game.p1Nick
 		else:
-			return games[gameId].p2Nick
+			return games[gameId].game.p2Nick
 
-	def ready(self, userName, GameId):
-		if games[gameId].p1Nick == userName:
-			games[gameId].p1Went = True
-		if games[gameId].p2Nick == userName:
-			games[gameId].p2Went = True
-		return games[gameId].bothWent()
+	def ready(self, userId, GameId):
+		if games[gameId].game.p1Id == userId:
+			games[gameId].game.p1Went = True
+		if games[gameId].game.p2Id == userId:
+			games[gameId].game.p2Went = True
+		while !games[gameId].game.bothWent():
+			print('Waiting for 2-nd player')
+		return games[gameId].game.bothWent()
 
-	def battle(self, userName, GameId, myfigure):
-		if games[gameId].p1Nick == userName:
-			games[gameId].moves[0] = myfigure
-		if games[gameId].p2Nick == userName:
-			games[gameId].moves[1] = myfigure
+	def battle(self, userId, GameId, myfigure):
+		if games[gameId].game.p1Id == userId:
+			games[gameId].game.moves[0] = myfigure
+		if games[gameId].game.p2Id == userId:
+			games[gameId].game.moves[1] = myfigure
 			
-		winner = games[gameId].winner()
+		winner = games[gameId].game.winner()
 		if winner == -1:
-			games[gameId].ties += 1
-			games[gameId].wins[0] += 1
-			games[gameId].wins[1] += 1
+			games[gameId].game.ties += 1
+			games[gameId].game.wins[0] += 1
+			games[gameId].game.wins[1] += 1
 		if winner == 0:
-			games[gameId].wins[0] += 1
+			games[gameId].game.wins[0] += 1
 		if winner == 1:
-			games[gameId].wins[1] += 1
+			games[gameId].game.wins[1] += 1
 			
 		ans
-		if games[gameId].p1Nick == userName:
-			ans[0] = myscore = games[gameId].wins[0]
-			ans[1] = oponentscore = games[gameId].wins[1]
-			ans[2] = oponentfigure = games[gameId].moves[1]
-		if games[gameId].p2Nick == userName:
-			ans[0] = myscore = games[gameId].wins[1]
-			ans[1] = oponentscore = games[gameId].wins[0]
-			ans[2] = oponentfigure = games[gameId].moves[0]
+		if games[gameId].game.p1Id == userId:
+			ans[0] = myscore = games[gameId].game.wins[0]
+			ans[1] = oponentscore = games[gameId].game.wins[1]
+			ans[2] = oponentfigure = games[gameId].game.moves[1]
+		if games[gameId].game.p2Id == userId:
+			ans[0] = myscore = games[gameId].game.wins[1]
+			ans[1] = oponentscore = games[gameId].game.wins[0]
+			ans[2] = oponentfigure = games[gameId].game.moves[0]
 		return ans
