@@ -1,4 +1,4 @@
-from _thread import *
+from threading import Thread
 import json 
 import pygame
 import pickle
@@ -15,11 +15,13 @@ class Serwer:
 	def connect(self, userName):
 		self.idCount += 1
 		gameId = self.lastGameId + 1
-		ans[0] = gameId
+		ans = []
+		ans.append(gameId)
 		self.lastGameId += 1
 		if self.idCount % 2 == 1:
-			self.games[gameId] = start_new_thread(playGame, (self, gameId))
-			self.games[gameId].game.p1Nick = userName
+			self.games[gameId] = Thread(target = self.playGame, args = (self, gameId)) # w słowniku chcemy przechowywać wątki na których są kolejne gry
+			self.games[gameId].start()
+			self.games[gameId].game.p1Nick = userName # nie działa odwołanie przez wątek.gra.parametr lub .metoda
 			self.games[gameId].game.p1Id = lastPlayerId
 			ans [1] = lastPlayerId
 			self.lastPlayerId += 1
@@ -33,7 +35,7 @@ class Serwer:
 		return ans
 
 	def playGame(self, gameId):
-		self.game = Game(gameId)
+		self.game = Game(gameId) # potrzebny while (gra istnieje): nasłuchuj, tylko nie umiemy napisać go tak żeby działał
 
 	def playerName(self, userId, GameId):
 		if games[gameId].game.p1Id != userId:
@@ -66,7 +68,7 @@ class Serwer:
 		if winner == 1:
 			games[gameId].game.wins[1] += 1
 			
-		ans
+		ans = []
 		if games[gameId].game.p1Id == userId:
 			ans[0] = myscore = games[gameId].game.wins[0]
 			ans[1] = oponentscore = games[gameId].game.wins[1]
