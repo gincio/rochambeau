@@ -15,7 +15,7 @@ class Serwer:
 	def connect(self, userName):
 		self.idCount += 1
 		gameId = self.lastGameId + 1
-		ans[0] = self.gameId
+		ans[0] = gameId
 		self.lastGameId += 1
 		if self.idCount % 2 == 1:
 			self.games[gameId] = start_new_thread(playGame, (self, gameId))
