@@ -1,5 +1,8 @@
-class Game:
-	def __init__(self, id): 
+import queue
+import threading
+
+class Game(threading.Thread):
+	def __init__(self, q = queue.Queue(), loop_time = 1.0/60, done = None): 
 	# wstępne informacje o grze, gra startuje i gracze jeszcze nic nie wybrali, mają po 0 punktów
 		self.p1Went = False
 		self.p2Went = False
@@ -12,13 +15,60 @@ class Game:
 		self.p2Nick = ''
 		self.p1Id = 0
 		self.p2Id = 0
-		
+		self.q = q
+		self.timeout = loop_time
+		self.done = done
+		super(Game, self).__init__()
+
+	def onThread(self, function, *args, **kwargs):
+		self.q.put((function, args, kwargs))
+
+	def run(self):
+		while True:
+			try:
+				function, args, kwargs = self.q.get(timeout=self.timeout)
+				function(*args, **kwargs)
+			except queue.Empty:
+				self.idle()
+
+	def idle(self):
+		# put the code you would have put in the `run` loop here 
+		pass
+
+	def set_done(self, done):
+		self.done = done
+
+	def set_game_Id(self, id):
+		self.id = id
+
 	def get_player1_nick(self):
-		return self.p1Nick
+		print("Zasysam nick: " + (self.p1Nick))
+		self.done.set()
+		return self.p1Nick #nie oddaje tego na server? odwołanie na serwerze jest odobre bo napis o zasysaniu pokazuje
+		
+	def set_player1_nick(self, nick):
+		self.p1Nick = nick
+		print("Ustawiam nick: " + str(nick))
+		self.done.set()
+	
+	def get_player1_Id(self):
+		return self.p1Id
+
+	def set_player1_Id(self, id):
+		self.p1Id = id
 		
 	def get_player2_nick(self):
 		return self.p2Nick
 		
+	def set_player2_nick(self, nick):
+		self.p2Nick = nick
+		
+	def get_player2_Id(self):
+		return self.p2Id
+
+	def set_player2_Id(self, id):
+		self.p2Id = id
+
 	def get_player_move(self, p):
 	# funkcja do sprawdzenia jakiego wyboru dokonuje gracz 
 		"""
@@ -27,6 +77,18 @@ class Game:
 		"""
 		return self.moves[p]
 		
+	def set_player_move(self, p, move):
+		self.moves[p] = move
+
+	def set_ties(self):
+		self.ties += 1
+
+	def set_wins(self, p):
+		self.wins[p] += 1
+
+	def get_wins(self, p):
+		return self.wins[p]
+
 	def player(self, player, move):
 	# gracz dokonuje wyboru
 		self.moves[player] = move
@@ -39,6 +101,15 @@ class Game:
 	# połączenie z serwerem
 		return self.ready
 		
+	def set_player1_Went(self):
+		self.p1Went = True
+
+	def set_player2_Went(self):
+		self.p2Went = True
+
+	def set_game_ready(self):
+		self.ready = True
+
 	def bothWent(self):
 	# sprawdzenie czy obaj gracze dokonali wyboru
 		return self.p1Went and self.p2Went

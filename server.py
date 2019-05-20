@@ -1,9 +1,10 @@
-from threading import Thread
+from threading import Thread, Event
 import json 
 import pygame
 import pickle
 import sys
 from game import Game
+import time
 
 class Serwer:
 	def __init__(self):
@@ -16,65 +17,83 @@ class Serwer:
 		self.idCount += 1
 		gameId = self.lastGameId + 1
 		ans = []
-		ans.append(gameId)
+		ans.insert(0, gameId)
 		self.lastGameId += 1
 		if self.idCount % 2 == 1:
-			self.games[gameId] = Thread(target = self.playGame, args = (self, gameId)) # w słowniku chcemy przechowywać wątki na których są kolejne gry
+			done = Event()
+			self.games[gameId] = Game() # w słowniku chcemy przechowywać wątki na których są kolejne gry
+			self.games[gameId].setName("Game " + str(gameId))
 			self.games[gameId].start()
-			self.games[gameId].game.p1Nick = userName # nie działa odwołanie przez wątek.gra.parametr lub .metoda
-			self.games[gameId].game.p1Id = lastPlayerId
-			ans [1] = lastPlayerId
+			self.games[gameId].onThread(self.games[gameId].set_done, done=done)
+			self.games[gameId].onThread(self.games[gameId].set_game_Id, id=gameId)
+			
+			print("Wysyłam nick: " + str(userName))
+			self.games[gameId].onThread(self.games[gameId].set_player1_nick, nick=userName)
+			done.wait()
+			#print("Player 1 nick: " + str(self.games[gameId].onThread(self.games[gameId].get_player1_nick)))
+			self.games[gameId].onThread(self.games[gameId].set_player1_Id, id=self.lastPlayerId)
+			#print("Player 1 id: " + str(self.games[gameId].onThread(self.games[gameId].get_player1_Id)))
+			
+			pobranenicki = str(self.games[gameId].onThread(self.games[gameId].get_player1_nick))
+			done.wait()
+			
+			time.sleep(3)
+			print("Waiting for U're mom")
+			time.sleep(3)
+			print("Player 1 nick: " + pobranenicki)
+			
+			ans.insert(1, self.lastPlayerId)
 			self.lastPlayerId += 1
 			print("Creating a new game...")
-		else:
-			self.games[gameId].game.ready = True
-			self.games[gameId].game.p2Nick = UserName
-			self.games[gameId].game.p2Id = lastPlayerId
-			ans [1] = lastPlayerId
+		if self.idCount % 2 == 0:
+			self.games[gameId].onThread(self.games[gameId].set_player2_nick, nick=userName)
+			#print("Player 2 nick: " + str(self.games[gameId].onThread(self.games[gameId].get_player2_nick)))
+			self.games[gameId].onThread(self.games[gameId].set_player2_Id, id=lastPlayerId)
+			#print("Player 2 id: " + str(self.games[gameId].onThread(self.games[gameId].get_player2_Id)))
+			self.games[gameId].onThread(self.games[gameId].set_game_ready)
+			ans.insert(1, lastPlayerId)
 			self.lastPlayerId += 1
+		print("Player 1 id: " + str(self.games[gameId].onThread(self.games[gameId].get_player1_Id)))
 		return ans
 
-	def playGame(self, gameId):
-		self.game = Game(gameId) # potrzebny while (gra istnieje): nasłuchuj, tylko nie umiemy napisać go tak żeby działał
-
 	def playerName(self, userId, GameId):
-		if games[gameId].game.p1Id != userId:
-			return games[gameId].game.p1Nick
+		if games[gameId].onThread(self.games[gameId].get_player1_Id) != userId:
+			return games[gameId].onThread(self.games[gameId].get_player1_nick)
 		else:
-			return games[gameId].game.p2Nick
+			return games[gameId].onThread(self.games[gameId].get_player2_nick)
 
 	def ready(self, userId, GameId):
-		if games[gameId].game.p1Id == userId:
-			games[gameId].game.p1Went = True
-		if games[gameId].game.p2Id == userId:
-			games[gameId].game.p2Went = True
-		while games[gameId].game.bothWent() == False:
+		if games[gameId].onThread(self.games[gameId].get_player1_Id) == userId:
+			games[gameId].onThread(self.games[gameId].set_player1_Went)
+		if games[gameId].onThread(self.games[gameId].get_player2_Id) == userId:
+			games[gameId].onThread(self.games[gameId].set_player2_Went)
+		while games[gameId].onThread(self.games[gameId].bothWent) == False:
 			print('Waiting for 2-nd player')
-		return games[gameId].game.bothWent()
+		return games[gameId].onThread(self.games[gameId].bothWent)
 
 	def battle(self, userId, GameId, myfigure):
-		if games[gameId].game.p1Id == userId:
-			games[gameId].game.moves[0] = myfigure
-		if games[gameId].game.p2Id == userId:
-			games[gameId].game.moves[1] = myfigure
+		if games[gameId].onThread(self.games[gameId].get_player1_Id) == userId:
+			games[gameId].onThread(self.games[gameId].set_player_move, (0, myfigure))
+		if games[gameId].onThread(self.games[gameId].get_player2_Id) == userId:
+			games[gameId].onThread(self.games[gameId].set_player_move, (1, myfigure))
 			
-		winner = games[gameId].game.winner()
+		winner = games[gameId].onThread(self.games[gameId].winner)
 		if winner == -1:
-			games[gameId].game.ties += 1
-			games[gameId].game.wins[0] += 1
-			games[gameId].game.wins[1] += 1
+			games[gameId].onThread(self.games[gameId].set_ties)
+			games[gameId].onThread(self.games[gameId].set_wins, 0)
+			games[gameId].onThread(self.games[gameId].set_wins, 1)
 		if winner == 0:
-			games[gameId].game.wins[0] += 1
+			games[gameId].onThread(self.games[gameId].set_wins, 0)
 		if winner == 1:
-			games[gameId].game.wins[1] += 1
+			games[gameId].onThread(self.games[gameId].set_wins, 1)
 			
 		ans = []
-		if games[gameId].game.p1Id == userId:
-			ans[0] = myscore = games[gameId].game.wins[0]
-			ans[1] = oponentscore = games[gameId].game.wins[1]
-			ans[2] = oponentfigure = games[gameId].game.moves[1]
-		if games[gameId].game.p2Id == userId:
-			ans[0] = myscore = games[gameId].game.wins[1]
-			ans[1] = oponentscore = games[gameId].game.wins[0]
-			ans[2] = oponentfigure = games[gameId].game.moves[0]
+		if games[gameId].onThread(self.games[gameId].get_player1_Id) == userId:
+			ans.insert(0, games[gameId].onThread(self.games[gameId].get_wins, 0)) #myscore
+			ans.insert(1, games[gameId].onThread(self.games[gameId].get_wins, 1)) #oponentscore
+			ans.insert(2, games[gameId].onThread(self.games[gameId].get_player_move, 1)) #oponentfigure
+		if games[gameId].onThread(self.games[gameId].get_player2_Id) == userId:
+			ans.insert(0, games[gameId].onThread(self.games[gameId].get_wins, 1)) #myscore
+			ans.insert(1, games[gameId].onThread(self.games[gameId].get_wins, 0)) #oponentscore
+			ans.insert(2, games[gameId].onThread(self.games[gameId].get_player_move, 0)) #oponentfigure
 		return ans
