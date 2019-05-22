@@ -2,7 +2,7 @@ import queue
 import threading
 
 class Game(threading.Thread):
-	def __init__(self, q = queue.Queue(), loop_time = 1.0/60, done = None): 
+	def __init__(self, ansq, q=None, loop_time=1.0/60, done=None): 
 	# wstępne informacje o grze, gra startuje i gracze jeszcze nic nie wybrali, mają po 0 punktów
 		self.p1Went = False
 		self.p2Went = False
@@ -18,7 +18,10 @@ class Game(threading.Thread):
 		self.q = q
 		self.timeout = loop_time
 		self.done = done
+		self.ansq = ansq
 		super(Game, self).__init__()
+		if not q:
+			self.q = queue.Queue()
 
 	def onThread(self, function, *args, **kwargs):
 		self.q.put((function, args, kwargs))
@@ -43,19 +46,23 @@ class Game(threading.Thread):
 
 	def get_player1_nick(self):
 		print("Zasysam nick: " + (self.p1Nick))
-		self.done.set()
-		return self.p1Nick #nie oddaje tego na server? odwołanie na serwerze jest odobre bo napis o zasysaniu pokazuje
+		self.ansq.insert(0, self.p1Nick) #nie oddaje tego na server? odwołanie na serwerze jest odobre bo napis o zasysaniu pokazuje
+		#self.done.set()
+	
+	def returnQ(self, value):
+		self.ansq.put(value)
 		
 	def set_player1_nick(self, nick):
 		self.p1Nick = nick
 		print("Ustawiam nick: " + str(nick))
-		self.done.set()
+		#self.done.set()
 	
 	def get_player1_Id(self):
 		return self.p1Id
 
 	def set_player1_Id(self, id):
 		self.p1Id = id
+		print("Ustawiam id: " + str(id))
 		
 	def get_player2_nick(self):
 		return self.p2Nick

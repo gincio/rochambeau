@@ -5,10 +5,12 @@ import pickle
 import sys
 from game import Game
 import time
+import queue
 
 class Serwer:
 	def __init__(self):
 		self.games = {} # możemy (jako serwer) prowadzić wiele niezależnych gier, więc tworzymy ich słownik
+		self.queues = {}
 		self.idCount = 0 # zmienna do przechowywania ID następnej gry jaka powstanie
 		self.lastGameId = 0
 		self.lastPlayerId = 1
@@ -21,7 +23,8 @@ class Serwer:
 		self.lastGameId += 1
 		if self.idCount % 2 == 1:
 			done = Event()
-			self.games[gameId] = Game() # w słowniku chcemy przechowywać wątki na których są kolejne gry
+			self.queues[gameId] = queue.Queue()
+			self.games[gameId] = Game(ansq=self.queues[gameId]) # w słowniku chcemy przechowywać wątki na których są kolejne gry
 			self.games[gameId].setName("Game " + str(gameId))
 			self.games[gameId].start()
 			self.games[gameId].onThread(self.games[gameId].set_done, done=done)
@@ -29,18 +32,19 @@ class Serwer:
 			
 			print("Wysyłam nick: " + str(userName))
 			self.games[gameId].onThread(self.games[gameId].set_player1_nick, nick=userName)
-			done.wait()
+			#done.wait()
 			#print("Player 1 nick: " + str(self.games[gameId].onThread(self.games[gameId].get_player1_nick)))
 			self.games[gameId].onThread(self.games[gameId].set_player1_Id, id=self.lastPlayerId)
-			#print("Player 1 id: " + str(self.games[gameId].onThread(self.games[gameId].get_player1_Id)))
-			
-			pobranenicki = str(self.games[gameId].onThread(self.games[gameId].get_player1_nick))
-			done.wait()
-			
-			time.sleep(3)
+			#print("Player 1 id: " + str(self.games[gameId].onThread(self.games[gameId].get_player1_Id))
+			#self.games[gameId].join()
+			print(self.queues[gameId].empty())
+			pobranenicki = self.queues[gameId].get() #str(self.games[gameId].onThread(self.games[gameId].get_player1_nick))
+			#done.wait()
+			print("cokolwiek")
+			#time.sleep(3)
 			print("Waiting for U're mom")
-			time.sleep(3)
-			print("Player 1 nick: " + pobranenicki)
+			#time.sleep(3)
+			print("Player 1 nick: " + str(pobranenicki))
 			
 			ans.insert(1, self.lastPlayerId)
 			self.lastPlayerId += 1
