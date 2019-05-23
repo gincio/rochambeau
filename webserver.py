@@ -29,7 +29,7 @@ def worker():
 		
 	elif action == 'getOpponent': # zwracamy nazwę rywala z którym zaczynamy grę
 		userId = str(request.form.get('UserId'))
-		GameId == str(request.form.get('GameId'))
+		GameId = str(request.form.get('GameId'))
 		
 		nick = Server.playerName(userId, GameId)
 		
@@ -39,7 +39,7 @@ def worker():
 	elif action == 'chooseFigure': # czekam na obie strony, podejmuję odpowiednią decyzję
 		myfigure = str(request.form.get('figure'))
 		userId = str(request.form.get('UserId'))
-		GameId == str(request.form.get('GameId'))
+		GameId = str(request.form.get('GameId'))
 		
 		ans = Server.battle(userId, GameId, myfigure)
 		
@@ -48,7 +48,7 @@ def worker():
 	
 	elif action == 'playerReady': # sprawdzenie czy przeciwnik jest już gotowy
 		userId = str(request.form.get('UserId'))
-		GameId == str(request.form.get('GameId'))
+		GameId = str(request.form.get('GameId'))
 		
 		if Server.ready(userId, GameId) == True:
 			stat = 'ok'
@@ -65,5 +65,5 @@ def worker():
 	return response
 
 if __name__ == '__main__':
-	app.run(debug=True)
+	app.run(host = '0.0.0.0',port=5000,debug=True)
 	print("Application Started")

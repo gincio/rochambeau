@@ -17,10 +17,10 @@ class Serwer:
 
 	def connect(self, userName):
 		self.idCount += 1
-		gameId = self.lastGameId + 1
+		gameId = self.lastGameId
+		print("Łączę z grą o id = " + str(gameId))
 		ans = []
 		ans.insert(0, gameId)
-		self.lastGameId += 1
 		if self.idCount % 2 == 1:
 			done = Event()
 			self.queues[gameId] = queue.Queue()
@@ -50,6 +50,7 @@ class Serwer:
 			print("Creating a new game...")
 			time.sleep(10)
 		if self.idCount % 2 == 0:
+			done = Event()
 			print("Wysyłam nick gracza 2: " + str(userName))
 			self.games[gameId].onThread(self.games[gameId].set_player2_nick, nick=userName)
 			print("Wysyłam id gracza 2: " + str(self.lastPlayerId))
@@ -68,6 +69,7 @@ class Serwer:
 			self.games[gameId].onThread(self.games[gameId].set_game_ready)
 			ans.insert(1, self.lastPlayerId)
 			self.lastPlayerId += 1
+			self.lastGameId += 1
 		return ans
 
 	def playerName(self, userId, GameId):

@@ -32,6 +32,7 @@ $('.figure').on('click', function() {
 $('#start-game').on('click', function() {
 	myUsername = $('#player-username').val();
 	$('#my-username').text(myUsername);
+	console.log('Sending connect request');
 	$.ajax({
 		url: 			window.location.href,
 		type:			'post',
