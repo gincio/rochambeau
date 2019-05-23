@@ -3,6 +3,9 @@
 import queue
 import threading
 
+#game to informacje o każdej z gier (dla każdej gry oddzielne game na oddzielnym wątku)
+#tutaj są wszystkie funkcje zmieniające te informacje i zwracające je na serwer
+
 class Game(threading.Thread):
 	def __init__(self, ansq, q=None, loop_time=1.0/60, done=None): 
 	# wstępne informacje o grze, gra startuje i gracze jeszcze nic nie wybrali, mają po 0 punktów
@@ -108,7 +111,7 @@ class Game(threading.Thread):
 			self.p2Went = True
 			
 	def connected(self):
-	# połączenie z serwerem
+	#informacja czy jest 2 graczy połączonych z serwerem
 		self.ansq.put(self.ready)
 		self.done.set()
 		
@@ -125,11 +128,19 @@ class Game(threading.Thread):
 	# sprawdzenie czy obaj gracze dokonali wyboru
 		self.ansq.put(self.p1Went and self.p2Went)
 		self.done.set()
-		
+
+	def bothFree(self):
+	# sprawdzenie czy obaj gracze są po dokonaniu wboru
+		if self.p1Went == False and self.p2Went == False:
+			self.ansq.put(True)
+		else:
+			self.ansq.put(False)
+		self.done.set()
+
 	def winner(self):
 	# sprawdzenie wszystkich kombinacji i wyłonienie zwycięzcy
-		p1 = self.moves[0].upper()
-		p2 = self.moves[1].upper()
+		p1 = str(self.moves[0]).upper()
+		p2 = str(self.moves[1]).upper()
 		
 		# P paper
 		# R rock

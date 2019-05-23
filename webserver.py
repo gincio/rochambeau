@@ -3,6 +3,9 @@
 from server import Serwer
 from flask import Flask, render_template, request, redirect, Response, jsonify
 
+#webserver to obsługa komunikacji naszego serwera z frontem (klientami)
+#Flask na webserver nasłuchuje na akcje wysyłane przez klientów, wysyła odpowiednie polecenia na serwer i zwraca klientom odpowiedzi
+
 app = Flask(__name__)
 Server = Serwer()
 
