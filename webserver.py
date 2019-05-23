@@ -16,7 +16,7 @@ def output():
 @app.route('/', methods = ['POST']) # gdy wybierzemy jakąś funkcjonalność 
 def worker():	
 	# read json + reply
-	result = ''
+	response = ''
 	action = str(request.form.get('action'))
 	
 	if action == 'setConnection': # ustawienie połączenia
@@ -24,17 +24,17 @@ def worker():
 		
 		ID = Server.connect(UserName)
 		
-		response = jsonify({'status': 'ok', 'GameId': ID[0], 'UserId': ID[1]})
-		response.headers.add('Access-Control-Allow-Origin', '*')
+		response = {'status': 'ok', 'GameId': ID[0], 'UserId': ID[1]}
+		#response.headers.add('Access-Control-Allow-Origin', '*')
 		
-	elif action == 'getOpponent': # zwracamy nazwę rywala z którym zaczynamy grę
+	elif action == 'getOponent': # zwracamy nazwę rywala z którym zaczynamy grę
 		userId = str(request.form.get('UserId'))
-		GameId = str(request.form.get('GameId'))
+		gameId = str(request.form.get('GameId'))
 		
-		nick = Server.playerName(userId, GameId)
+		nick = Server.playerName(userId, gameId)
 		
-		response = jsonify({'status': 'ok', 'username': nick})
-		response.headers.add('Access-Control-Allow-Origin', '*')
+		response = {'status': 'ok', 'username': nick}
+		#response.headers.add('Access-Control-Allow-Origin', '*')
 		
 	elif action == 'chooseFigure': # czekam na obie strony, podejmuję odpowiednią decyzję
 		myfigure = str(request.form.get('figure'))
@@ -43,8 +43,8 @@ def worker():
 		
 		ans = Server.battle(userId, GameId, myfigure)
 		
-		response = jsonify({'status': 'ok', 'myScore': ans[0], 'oponentScore': ans[1], 'oponentFigure': ans[2]})
-		response.headers.add('Access-Control-Allow-Origin', '*')
+		response = {'status': 'ok', 'myScore': ans[0], 'oponentScore': ans[1], 'oponentFigure': ans[2]}
+		#response.headers.add('Access-Control-Allow-Origin', '*')
 	
 	elif action == 'playerReady': # sprawdzenie czy przeciwnik jest już gotowy
 		userId = str(request.form.get('UserId'))
@@ -55,14 +55,10 @@ def worker():
 		else:
 			stat = 'wait'
 		
-		response = jsonify({'status': stat})
-		response.headers.add('Access-Control-Allow-Origin', '*')
-		
-	else: # error
-		response = jsonify({'status': 'fail'})
-		response.headers.add('Access-Control-Allow-Origin', '*')
+		response = {'status': stat}
+		#response.headers.add('Access-Control-Allow-Origin', '*')
 
-	return response
+	return jsonify(response)
 
 if __name__ == '__main__':
 	app.run(host = '0.0.0.0',port=5000,debug=True)
