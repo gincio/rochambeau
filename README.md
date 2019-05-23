@@ -7,10 +7,11 @@ We made web front-end to make our app widely-available.
 
 ## Installation
 To install Rochambeau Multithread Game you have to install `Python` in version 3.6 or above and `pip` package manager.
-Then you have to install some extra packages for Flask webserver and pygame library
+Then you have to install some extra packages:
 ```
 pip install Flask
 pip install pygame
+pip install queuelib
 ```
 
 Then just clone this repo with command
