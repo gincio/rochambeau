@@ -29,7 +29,7 @@ class Serwer:
 			self.games[gameId] = Game(ansq=self.queues[gameId]) # w słowniku chcemy przechowywać wątki na których są kolejne gry
 			self.games[gameId].setName("Game " + str(gameId))
 			self.games[gameId].start()
-			self.games[gameId].onThread(self.games[gameId].set_done, done=done)
+			self.games[gameId].onThread(self.games[gameId].set_done, done=self.done)
 			self.games[gameId].onThread(self.games[gameId].set_game_Id, id=gameId)
 			
 			print("Wysyłam nick gracza 1: " + str(userName))
@@ -78,7 +78,7 @@ class Serwer:
 		tmp = self.queues[gameId].get()
 		self.done.wait()
 		tmp2 = ""
-		while tmp2 == "":
+		while (tmp2 == "" or tmp2 == "False"):
 			if tmp != userId:
 				self.games[gameId].onThread(self.games[gameId].get_player1_nick)
 				tmp2 = self.queues[gameId].get()
@@ -90,7 +90,7 @@ class Serwer:
 		print("Nick drugiego gracza: " + str(tmp2))
 		return tmp2
 
-	def ready(self, userId, GameId):
+	def ready(self, userId, gameId):
 		self.games[gameId].onThread(self.games[gameId].get_player1_Id)
 		tmp = self.queues[gameId].get()
 		self.done.wait()
@@ -111,7 +111,7 @@ class Serwer:
 			self.done.wait()
 		return tmp2
 
-	def battle(self, userId, GameId, myfigure):
+	def battle(self, userId, gameId, myfigure):
 		self.games[gameId].onThread(self.games[gameId].get_player1_Id)
 		p1id = self.queues[gameId].get()
 		self.done.wait()
@@ -121,7 +121,7 @@ class Serwer:
 		if p1id == userId:
 			self.games[gameId].onThread(self.games[gameId].set_player_move, (0, myfigure))
 		if p2id == userId:
-			games[gameId].onThread(self.games[gameId].set_player_move, (1, myfigure))
+			self.games[gameId].onThread(self.games[gameId].set_player_move, (1, myfigure))
 
 		self.games[gameId].onThread(self.games[gameId].winner)
 		winner = self.queues[gameId].get()

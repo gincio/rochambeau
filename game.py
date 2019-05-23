@@ -128,8 +128,8 @@ class Game(threading.Thread):
 		
 	def winner(self):
 	# sprawdzenie wszystkich kombinacji i wyłonienie zwycięzcy
-		p1 = self.moves[0].upper()[0]
-		p2 = self.moves[1].upper()[0]
+		p1 = self.moves[0].upper()
+		p2 = self.moves[1].upper()
 		
 		# P paper
 		# R rock

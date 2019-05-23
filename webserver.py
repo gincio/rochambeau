@@ -28,8 +28,8 @@ def worker():
 		#response.headers.add('Access-Control-Allow-Origin', '*')
 		
 	elif action == 'getOponent': # zwracamy nazwę rywala z którym zaczynamy grę
-		userId = str(request.form.get('UserId'))
-		gameId = str(request.form.get('GameId'))
+		userId = int(request.form.get('UserId'))
+		gameId = int(request.form.get('GameId'))
 		
 		nick = Server.playerName(userId, gameId)
 		
@@ -38,8 +38,8 @@ def worker():
 		
 	elif action == 'chooseFigure': # czekam na obie strony, podejmuję odpowiednią decyzję
 		myfigure = str(request.form.get('figure'))
-		userId = str(request.form.get('UserId'))
-		GameId = str(request.form.get('GameId'))
+		userId = int(request.form.get('UserId'))
+		GameId = int(request.form.get('GameId'))
 		
 		ans = Server.battle(userId, GameId, myfigure)
 		
@@ -47,8 +47,8 @@ def worker():
 		#response.headers.add('Access-Control-Allow-Origin', '*')
 	
 	elif action == 'playerReady': # sprawdzenie czy przeciwnik jest już gotowy
-		userId = str(request.form.get('UserId'))
-		GameId = str(request.form.get('GameId'))
+		userId = int(request.form.get('UserId'))
+		GameId = int(request.form.get('GameId'))
 		
 		if Server.ready(userId, GameId) == True:
 			stat = 'ok'
