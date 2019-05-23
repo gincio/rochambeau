@@ -45,33 +45,32 @@ class Game(threading.Thread):
 		self.id = id
 
 	def get_player1_nick(self):
-		print("Zasysam nick: " + (self.p1Nick))
-		self.ansq.insert(0, self.p1Nick) #nie oddaje tego na server? odwołanie na serwerze jest odobre bo napis o zasysaniu pokazuje
-		#self.done.set()
+		self.ansq.put(self.p1Nick)
+		self.done.set()
 	
 	def returnQ(self, value):
 		self.ansq.put(value)
 		
 	def set_player1_nick(self, nick):
 		self.p1Nick = nick
-		print("Ustawiam nick: " + str(nick))
-		#self.done.set()
 	
 	def get_player1_Id(self):
-		return self.p1Id
+		self.ansq.put(self.p1Id)
+		self.done.set()
 
 	def set_player1_Id(self, id):
 		self.p1Id = id
-		print("Ustawiam id: " + str(id))
 		
 	def get_player2_nick(self):
-		return self.p2Nick
+		self.ansq.put(self.p2Nick)
+		self.done.set()
 		
 	def set_player2_nick(self, nick):
 		self.p2Nick = nick
 		
 	def get_player2_Id(self):
-		return self.p2Id
+		self.ansq.put(self.p2Id)
+		self.done.set()
 
 	def set_player2_Id(self, id):
 		self.p2Id = id
@@ -82,7 +81,8 @@ class Game(threading.Thread):
 		:param p: [0,1]
 		:return: Move
 		"""
-		return self.moves[p]
+		self.ansq.put(self.moves[p])
+		self.done.set()
 		
 	def set_player_move(self, p, move):
 		self.moves[p] = move
@@ -94,7 +94,8 @@ class Game(threading.Thread):
 		self.wins[p] += 1
 
 	def get_wins(self, p):
-		return self.wins[p]
+		self.ansq.put(self.wins[p])
+		self.done.set()
 
 	def player(self, player, move):
 	# gracz dokonuje wyboru
@@ -106,7 +107,8 @@ class Game(threading.Thread):
 			
 	def connected(self):
 	# połączenie z serwerem
-		return self.ready
+		self.ansq.put(self.ready)
+		self.done.set()
 		
 	def set_player1_Went(self):
 		self.p1Went = True
@@ -119,7 +121,8 @@ class Game(threading.Thread):
 
 	def bothWent(self):
 	# sprawdzenie czy obaj gracze dokonali wyboru
-		return self.p1Went and self.p2Went
+		self.ansq.put(self.p1Went and self.p2Went)
+		self.done.set()
 		
 	def winner(self):
 	# sprawdzenie wszystkich kombinacji i wyłonienie zwycięzcy
@@ -185,7 +188,8 @@ class Game(threading.Thread):
 		elif p1 == "R" and p2 == "K":
 			winner = 1
 		
-		return winner
+		self.ansq.put(winner)
+		self.done.set()
 		
 	def resetWent(self):
 	# przy każdej turze musimy wyzerować wybór, by ponownie sprawdzić
