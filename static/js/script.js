@@ -98,7 +98,7 @@ function newRound() {
 		},
 		success: function (data) {
 			if (data['status'] == 'ok') {
-				('#round-score-dialog').addClass('hidden');
+				$('#round-score-dialog').addClass('hidden');
 				chosenFigure = '';
 				oponentFigure = '';
 				roundScore = '';
