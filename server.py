@@ -80,7 +80,7 @@ class Serwer:
 		self.done.wait()
 		tmp2 = False
 		tmp3 = ""
-		while tmp2 == False: #dopiero gdy obaj gracze mają połączenie z serwerem można każdemu zwrócić nick drugiego
+		while tmp2 != True: #dopiero gdy obaj gracze mają połączenie z serwerem można każdemu zwrócić nick drugiego
 			self.games[gameId].onThread(self.games[gameId].connected)
 			tmp2 = self.queues[gameId].get()
 			self.done.wait()
@@ -88,7 +88,7 @@ class Serwer:
 			self.games[gameId].onThread(self.games[gameId].get_player1_nick)
 			tmp3 = self.queues[gameId].get()
 			self.done.wait()
-		else:
+		if tmp == userId:
 			self.games[gameId].onThread(self.games[gameId].get_player2_nick)
 			tmp3 = self.queues[gameId].get()
 			self.done.wait()
@@ -96,12 +96,12 @@ class Serwer:
 
 	def ready(self, userId, gameId): #klient pyta czy obaj gracze są gotowi na następną rundę (żeby zaczęli ją równocześnie i mieli równą ilość czasu)
 		exist = False
-		while exist == False:
+		while exist != True:
 			self.games[gameId].onThread(self.games[gameId].connected)
 			exist = self.queues[gameId].get()
 			self.done.wait()
 		bfree = False
-		while bfree == False:
+		while bfree != True:
 			self.games[gameId].onThread(self.games[gameId].bothWent)
 			bfree = self.queues[gameId].get()
 			self.done.wait()
@@ -122,38 +122,43 @@ class Serwer:
 			self.games[gameId].onThread(self.games[gameId].set_player2_Went)
 
 		bwent = False
-		while bwent == False: #dopiero gdy obaj gracze wykonają ruch w danej rundzie możemy przejść dalej
+		while bwent != True: #dopiero gdy obaj gracze wykonają ruch w danej rundzie możemy przejść dalej
 			self.games[gameId].onThread(self.games[gameId].bothWent)
 			bwent = self.queues[gameId].get()
 			self.done.wait()
-		
-		self.games[gameId].onThread(self.games[gameId].winner) #sprawdzamy który gracz wygrał rundę
-		winner = self.queues[gameId].get()
-		self.done.wait()
-		if winner == -1:
-			self.games[gameId].onThread(self.games[gameId].set_ties) #w przypadku remisu dopisujemy każdemu po punkcie i zwiększamy liczbę remisów
-			self.games[gameId].onThread(self.games[gameId].set_wins, 0)
-			self.games[gameId].onThread(self.games[gameId].set_wins, 1)
-		if winner == 0:
-			self.games[gameId].onThread(self.games[gameId].set_wins, 0) #gdy wygra gracz 1 zwiększamy jego wynik
-		if winner == 1:
-			self.games[gameId].onThread(self.games[gameId].set_wins, 1) #gdy wygra gracz 2 zwiększamy jego wynik
 
-		self.games[gameId].onThread(self.games[gameId].resetWent) #resetujemy informajcę o tym że obaj wykonali ruch
+		if p1id == userId: #poniższe instrukcje wykonujemy tylko raz, dla obu graczy, więc zakładamy że będą wykonane 'przy graczu 1'
+			self.games[gameId].onThread(self.games[gameId].winner) #sprawdzamy który gracz wygrał rundę
+			winner = self.queues[gameId].get()
+			self.done.wait()
+			if winner == -1:
+				self.games[gameId].onThread(self.games[gameId].set_ties) #w przypadku remisu dopisujemy każdemu po punkcie i zwiększamy liczbę remisów
+				self.games[gameId].onThread(self.games[gameId].set_wins, 0)
+				self.games[gameId].onThread(self.games[gameId].set_wins, 1)
+			if winner == 0:
+				self.games[gameId].onThread(self.games[gameId].set_wins, 0) #gdy wygra gracz 1 zwiększamy jego wynik
+			if winner == 1:
+				self.games[gameId].onThread(self.games[gameId].set_wins, 1) #gdy wygra gracz 2 zwiększamy jego wynik
+
+			self.games[gameId].onThread(self.games[gameId].resetWent) #resetujemy informajcę o tym że obaj wykonali ruch
 
 		ans = [] #przygotowanie zmiennej którą wysyłamy jako odpowiedź, pobieramy dane i w każdemu z graczy wysyłamy odpowiedni zestaw informacji
 		self.games[gameId].onThread(self.games[gameId].get_wins, 0)
 		score1 = self.queues[gameId].get()
 		self.done.wait()
+		print("score1: " + str(score1))
 		self.games[gameId].onThread(self.games[gameId].get_wins, 1)
 		score2 = self.queues[gameId].get()
 		self.done.wait()
+		print("score2: " + str(score2))
 		self.games[gameId].onThread(self.games[gameId].get_player_move, 0)
 		move1 = self.queues[gameId].get()
 		self.done.wait()
+		print("move1: " + str(move1))
 		self.games[gameId].onThread(self.games[gameId].get_player_move, 1)
 		move2 = self.queues[gameId].get()
 		self.done.wait()
+		print("move2: " + str(move2))
 		if p1id == userId:
 			ans.insert(0, score1) #myscore
 			ans.insert(1, score2) #oponentscore

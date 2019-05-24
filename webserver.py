@@ -46,6 +46,9 @@ def worker():
 		
 		ans = Server.battle(userId, GameId, myfigure)
 		
+		print('myScore ' + str(ans[0]))
+		print('oponentScore ' + str(ans[1]))
+		print('oponentFigure ' + str(ans[2]))
 		response = {'status': 'ok', 'myScore': ans[0], 'oponentScore': ans[1], 'oponentFigure': ans[2]}
 		#response.headers.add('Access-Control-Allow-Origin', '*')
 	
