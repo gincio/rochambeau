@@ -102,7 +102,7 @@ class Serwer:
 			self.done.wait()
 		bfree = False
 		while bfree != True:
-			self.games[gameId].onThread(self.games[gameId].bothWent)
+			self.games[gameId].onThread(self.games[gameId].bothFree)
 			bfree = self.queues[gameId].get()
 			self.done.wait()
 		return bfree
@@ -117,15 +117,20 @@ class Serwer:
 		if p1id == userId: #ustawiamy ruch pierwszego gracza i informujemy że już wykonał ruch
 			self.games[gameId].onThread(self.games[gameId].set_player_move, p=0, move=myfigure)
 			self.games[gameId].onThread(self.games[gameId].set_player1_Went)
+			print("Gracz 1 wykonał ruch")
 		if p2id == userId: #ustawiamy ruch drugiego gracza i informujemy że już wykonał ruch
 			self.games[gameId].onThread(self.games[gameId].set_player_move, p=1, move=myfigure)
 			self.games[gameId].onThread(self.games[gameId].set_player2_Went)
+			print("Gracz 2 wykonał ruch")
 
 		bwent = False
 		while bwent != True: #dopiero gdy obaj gracze wykonają ruch w danej rundzie możemy przejść dalej
 			self.games[gameId].onThread(self.games[gameId].bothWent)
 			bwent = self.queues[gameId].get()
 			self.done.wait()
+			time.sleep(1)
+
+		print("Obaj gracze wykonali ruch " + str(bwent))
 
 		if p1id == userId: #poniższe instrukcje wykonujemy tylko raz, dla obu graczy, więc zakładamy że będą wykonane 'przy graczu 1'
 			self.games[gameId].onThread(self.games[gameId].winner) #sprawdzamy który gracz wygrał rundę

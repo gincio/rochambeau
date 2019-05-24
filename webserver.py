@@ -60,7 +60,7 @@ def worker():
 			stat = 'ok'
 		else:
 			stat = 'wait'
-		
+		print("Wysłałem gotowość graczowi " + str(userId))
 		response = {'status': stat}
 		#response.headers.add('Access-Control-Allow-Origin', '*')
 

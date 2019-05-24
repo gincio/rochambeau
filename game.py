@@ -126,7 +126,10 @@ class Game(threading.Thread):
 
 	def bothWent(self):
 	# sprawdzenie czy obaj gracze dokonali wyboru
-		self.ansq.put(self.p1Went and self.p2Went)
+		if self.p1Went == True and self.p2Went == True:
+			self.ansq.put(True)
+		else:
+			self.ansq.put(False)
 		self.done.set()
 
 	def bothFree(self):
