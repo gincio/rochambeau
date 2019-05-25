@@ -42,9 +42,9 @@ def worker():
 	elif action == 'chooseFigure': # czekam na obie strony, podejmuję odpowiednią decyzję
 		myfigure = str(request.form.get('figure'))
 		userId = int(request.form.get('UserId'))
-		GameId = int(request.form.get('GameId'))
+		gameId = int(request.form.get('GameId'))
 		
-		ans = Server.battle(userId, GameId, myfigure)
+		ans = Server.battle(userId, gameId, myfigure)
 		
 		print('myScore ' + str(ans[0]))
 		print('oponentScore ' + str(ans[1]))
