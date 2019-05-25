@@ -133,16 +133,18 @@ function chooseFigure(figure) {
 		success: function (data) {
 			if (data['status'] == 'ok') {
 				oponentFigure = data['oponentFigure'];
+
 				if (data['oponentScore'] > oponentScore) {
-					oponentScore = data['oponentScore'];
 					roundScore = -1;
 				}
 				else if (data['myScore'] > myScore) {
-					myScore = data['myScore'];
 					roundScore = 1;
 				}
-				else 
+				else  {
 					roundScore = 0;
+				}
+				oponentScore = data['oponentScore'];
+				myScore = data['myScore'];
 				showScore(roundScore);
 			}
 			else {
@@ -175,15 +177,15 @@ function showScore(roundScore) {
 	$('.round-score').children().each(function() {$(this).hide()});
 	if (roundScore == 1) {
 		$('#you-won').show();
-		$('#my-score').text(myScore);
 	}
 	else if (roundScore == -1) {
 		$('#you-lost').show();
-		$('#oponent-score').text(oponentScore);
 	}
 	else {
 		$('#draw').show();
 	}
+	$('#my-score').text(myScore);
+	$('#oponent-score').text(oponentScore);
 	setTimeout(newRound,4000);
 }
 
