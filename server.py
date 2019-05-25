@@ -95,17 +95,25 @@ class Serwer:
 		return tmp3
 
 	def ready(self, userId, gameId): #klient pyta czy obaj gracze są gotowi na następną rundę (żeby zaczęli ją równocześnie i mieli równą ilość czasu)
+		timeout = 0
 		exist = False
 		while exist != True:
 			self.games[gameId].onThread(self.games[gameId].connected)
 			exist = self.queues[gameId].get()
 			self.done.wait()
 		bfree = False
-		while bfree != True:
-			self.games[gameId].onThread(self.games[gameId].bothFree)
-			bfree = self.queues[gameId].get()
-			self.done.wait()
-		return bfree
+		if timeout < 10:
+			while bfree != True:
+				self.games[gameId].onThread(self.games[gameId].bothFree)
+				bfree = self.queues[gameId].get()
+				self.done.wait()
+				time.sleep(1)
+				timeout += 1
+				if timeout >= 10:
+					break
+			return bfree
+		if timeout >=10:
+			return False
 
 	def battle(self, userId, gameId, myfigure):
 		self.games[gameId].onThread(self.games[gameId].get_player1_Id) #pobieramy Id pierwszego gracza
@@ -123,31 +131,45 @@ class Serwer:
 			self.games[gameId].onThread(self.games[gameId].set_player2_Went)
 			print("Gracz 2 wykonał ruch")
 
+		timeout = 0
 		bwent = False
 		while bwent != True: #dopiero gdy obaj gracze wykonają ruch w danej rundzie możemy przejść dalej
 			self.games[gameId].onThread(self.games[gameId].bothWent)
 			bwent = self.queues[gameId].get()
 			self.done.wait()
 			time.sleep(1)
+			timeout += 1
+			if timeout > 15:
+				break				
 
-		print("Obaj gracze wykonali ruch " + str(bwent))
+		if timeout < 16:
+			print("Obaj gracze wykonali ruch " + str(bwent))
 
-		if p2id == userId:
-			time.sleep(1)
-		if p1id == userId: #poniższe instrukcje wykonujemy tylko raz, dla obu graczy, więc zakładamy że będą wykonane 'przy graczu 1'
-			self.games[gameId].onThread(self.games[gameId].winner) #sprawdzamy który gracz wygrał rundę
-			winner = self.queues[gameId].get()
-			self.done.wait()
-			if winner == -1:
-				self.games[gameId].onThread(self.games[gameId].set_ties) #w przypadku remisu dopisujemy każdemu po punkcie i zwiększamy liczbę remisów
-				self.games[gameId].onThread(self.games[gameId].set_wins, 0)
-				self.games[gameId].onThread(self.games[gameId].set_wins, 1)
-			if winner == 0:
-				self.games[gameId].onThread(self.games[gameId].set_wins, 0) #gdy wygra gracz 1 zwiększamy jego wynik
-			if winner == 1:
-				self.games[gameId].onThread(self.games[gameId].set_wins, 1) #gdy wygra gracz 2 zwiększamy jego wynik
+			if p2id == userId:
+				time.sleep(1)
+			if p1id == userId: #poniższe instrukcje wykonujemy tylko raz, dla obu graczy, więc zakładamy że będą wykonane 'przy graczu 1'
+				self.games[gameId].onThread(self.games[gameId].winner) #sprawdzamy który gracz wygrał rundę
+				winner = self.queues[gameId].get()
+				self.done.wait()
+				if winner == -1:
+					self.games[gameId].onThread(self.games[gameId].set_ties) #w przypadku remisu nikt nie dostaje punktów, zwiększamy liczbę remisów
+				if winner == 0:
+					self.games[gameId].onThread(self.games[gameId].set_wins, 0) #gdy wygra gracz 1 zwiększamy jego wynik
+				if winner == 1:
+					self.games[gameId].onThread(self.games[gameId].set_wins, 1) #gdy wygra gracz 2 zwiększamy jego wynik
 
-			self.games[gameId].onThread(self.games[gameId].resetWent) #resetujemy informajcę o tym że obaj wykonali ruch
+				self.games[gameId].onThread(self.games[gameId].resetWent) #resetujemy informajcę o tym że obaj wykonali ruch
+
+		if timeout > 16:
+			print("Timeout, jeden z graczy nie wykonał ruchu.")
+
+			if p2id == userId:
+				time.sleep(1)
+			if p1id == userId:
+				self.games[gameId].onThread(self.games[gameId].set_player_move, p=0, move="T")
+				self.games[gameId].onThread(self.games[gameId].set_player_move, p=1, move="T")
+
+				self.games[gameId].onThread(self.games[gameId].resetWent) #resetujemy informajcę o tym że obaj wykonali ruch
 
 		ans = [] #przygotowanie zmiennej którą wysyłamy jako odpowiedź, pobieramy dane i w każdemu z graczy wysyłamy odpowiedni zestaw informacji
 		self.games[gameId].onThread(self.games[gameId].get_wins, 0)

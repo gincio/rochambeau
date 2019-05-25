@@ -54,10 +54,12 @@ def worker():
 	
 	elif action == 'playerReady': # sprawdzenie czy przeciwnik jest już gotowy
 		userId = int(request.form.get('UserId'))
-		GameId = int(request.form.get('GameId'))
+		gameId = int(request.form.get('GameId'))
 		
-		if Server.ready(userId, GameId) == True:
+		if Server.ready(userId, gameId) == True:
 			stat = 'ok'
+		elif Server.ready(userId, gameId) == False:
+			stat = 'fail'
 		else:
 			stat = 'wait'
 		print("Wysłałem gotowość graczowi " + str(userId))
