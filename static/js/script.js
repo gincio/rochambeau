@@ -167,7 +167,8 @@ function showConnectionErrorDialog() {
 }
 
 function showScore(roundScore) {
-	stopTimer();
+	if (timerInterval)
+		stopTimer();
 	$('#round-score-dialog').removeClass('hidden');
 	animateScoreDialog();
 	var myFigureIcon = $(document.createElement('i')).addClass(figureIcons[chosenFigure]);
@@ -206,7 +207,7 @@ function setTimer(seconds) {
 	seconds > 5 ? $('#time-left').removeClass('hurry-up') : $('#time-left').addClass('hurry-up'); 
 	if (seconds == 0 && timerInterval) {
 		$('#time-left').removeClass('hurry-up');
-		showScore();
+		stopTimer();
 	}
 }
 
