@@ -132,6 +132,8 @@ class Serwer:
 
 		print("Obaj gracze wykonali ruch " + str(bwent))
 
+		if p2id == userId:
+			time.sleep(1)
 		if p1id == userId: #poniższe instrukcje wykonujemy tylko raz, dla obu graczy, więc zakładamy że będą wykonane 'przy graczu 1'
 			self.games[gameId].onThread(self.games[gameId].winner) #sprawdzamy który gracz wygrał rundę
 			winner = self.queues[gameId].get()
