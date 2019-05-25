@@ -24,8 +24,8 @@ $('.figure').on('click', function() {
 		$(this).addClass('chosen');
 		$(this).siblings().each(function() {
 			$(this).addClass('fade-out');
-		chooseFigure(chosenFigure);
 		});
+		chooseFigure(chosenFigure);
 	}
 });
 
