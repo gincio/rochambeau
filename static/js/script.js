@@ -14,7 +14,7 @@ var figureIcons = {
 	'S' 	: 'far fa-hand-scissors',
 	'L' 	: 'far fa-hand-lizard',
 	'K' 	: 'far fa-hand-spock',
-	''		: 'far fa-question-circle'
+	'T'		: 'far fa-question-circle'
 }
 var timerInterval;
 
@@ -171,6 +171,7 @@ function showScore(roundScore) {
 		stopTimer();
 	$('#round-score-dialog').removeClass('hidden');
 	animateScoreDialog();
+	if (chosenFigure == '') chosenFigure = 'T';
 	var myFigureIcon = $(document.createElement('i')).addClass(figureIcons[chosenFigure]);
 	$('#my-figure').html(myFigureIcon);
 	var oponentFigureIcon = $(document.createElement('i')).addClass(figureIcons[oponentFigure]);
@@ -205,9 +206,14 @@ function setTimer(seconds) {
 	seconds < 10 ? timeLeft += '0' + seconds : timeLeft += seconds;
 	$('#time-left').text(timeLeft);
 	seconds > 5 ? $('#time-left').removeClass('hurry-up') : $('#time-left').addClass('hurry-up'); 
-	if (seconds == 0 && timerInterval) {
+	if (seconds <= 0 && timerInterval) {
 		$('#time-left').removeClass('hurry-up');
 		stopTimer();
+		if (chosenFigure == '') {
+			chosenFigure = 'T';
+			chooseFigure(chosenFigure);	
+		}
+		
 	}
 }
 
